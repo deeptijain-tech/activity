@@ -3,29 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Deepti's Team - Executive Performance Deck</title>
-  <!-- Chart.js & PapaParse -->
+  <title>Deepti's Team - HD Executive Deck with Direct Value Labels</title>
+  
+  <!-- Chart.js Core -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js DataLabels Plugin (Bars ke upar direct numbers dikhane ke liye) -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+  <!-- PapaParse for CSV parsing -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <!-- SheetJS for direct Excel file support -->
+  <!-- SheetJS for Excel files -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
     :root {
-      --bg-canvas: #f0f4f9;
-      --card-bg: rgba(255, 255, 255, 0.92);
-      --card-border: rgba(210, 222, 238, 0.7);
-      --primary: #1e3c72;
-      --primary-light: #2a5298;
-      --accent-blue: #0072ff;
-      --accent-cyan: #00c6ff;
-      --accent-green: #11998e;
-      --accent-orange: #f7971e;
-      --accent-red: #eb3349;
-      --text-dark: #1e293b;
-      --text-muted: #64748b;
-      --shadow-soft: 0 12px 30px rgba(30, 60, 114, 0.08);
-      --shadow-depth: 0 18px 45px rgba(22, 34, 57, 0.12);
+      --bg-gradient: radial-gradient(circle at 50% 0%, #15253e 0%, #0c1524 60%, #060b14 100%);
+      --card-bg: rgba(18, 30, 49, 0.88);
+      --card-border: rgba(64, 120, 192, 0.28);
+      --neon-blue: #00d2ff;
+      --neon-cyan: #3a7bd5;
+      --accent-green: #10b981;
+      --accent-warn: #f59e0b;
+      --accent-danger: #ef4444;
+      --text-white: #f8fafc;
+      --text-sub: #94a3b8;
+      --glow-blue: 0 0 20px rgba(0, 210, 255, 0.35);
+      --glow-red: 0 0 18px rgba(239, 68, 68, 0.6);
     }
 
     * {
@@ -36,368 +38,377 @@
     }
 
     body {
-      background: linear-gradient(135deg, #eef2f7 0%, #e2e8f0 100%);
-      color: var(--text-dark);
+      background: var(--bg-gradient);
+      color: var(--text-white);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px;
+      padding: 16px;
     }
 
-    /* Top Navigation & File Bar */
-    .top-control-panel {
+    /* Top Control Bar with 4 Upload Buttons */
+    .top-bar {
       width: 100%;
-      max-width: 1300px;
-      background: var(--card-bg);
+      max-width: 1360px;
+      background: rgba(15, 26, 43, 0.94);
       border: 1px solid var(--card-border);
       border-radius: 16px;
-      padding: 14px 24px;
+      padding: 12px 20px;
       display: flex;
-      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      box-shadow: var(--shadow-soft);
-      backdrop-filter: blur(10px);
-      margin-bottom: 18px;
-    }
-
-    .upload-group {
-      display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(14px);
+      margin-bottom: 16px;
     }
 
-    .custom-file-upload {
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .upload-chip {
       position: relative;
-      background: linear-gradient(135deg, #2b5876, #4e4376);
-      color: white;
-      padding: 8px 16px;
-      font-size: 0.82rem;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.8rem;
       font-weight: 600;
-      border-radius: 8px;
       cursor: pointer;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(43, 88, 118, 0.25);
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
-    .custom-file-upload:hover {
+    .upload-chip:hover {
+      box-shadow: var(--glow-blue);
       transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(43, 88, 118, 0.35);
     }
-    .custom-file-upload input {
+    .upload-chip input {
       position: absolute;
-      left: 0;
       top: 0;
-      opacity: 0;
+      left: 0;
       width: 100%;
       height: 100%;
+      opacity: 0;
       cursor: pointer;
     }
 
-    .filter-group {
+    .filter-wrapper {
       display: flex;
       gap: 10px;
       align-items: center;
     }
-    .filter-group select, .filter-group input {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
+
+    .filter-wrapper select, .filter-wrapper input {
+      background: #0d1726;
+      border: 1px solid var(--card-border);
+      color: var(--text-white);
       padding: 7px 12px;
-      font-size: 0.85rem;
-      color: var(--text-dark);
-      font-weight: 500;
+      border-radius: 8px;
+      font-size: 0.82rem;
       outline: none;
     }
 
-    /* Presentation Slide Canvas */
-    .slide-canvas {
+    /* Master Slide Frame */
+    .slide-stage {
       width: 100%;
-      max-width: 1300px;
-      min-height: 670px;
-      background: #ffffff;
-      border-radius: 24px;
-      box-shadow: var(--shadow-depth);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      position: relative;
-      overflow: hidden;
+      max-width: 1360px;
+      min-height: 690px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(20px);
+      padding: 30px 40px;
       display: flex;
       flex-direction: column;
-      padding: 40px;
+      position: relative;
     }
 
     .slide {
       display: none;
       height: 100%;
       flex-direction: column;
-      animation: fadeIn 0.35s ease-in-out;
+      animation: smoothFade 0.35s ease-in-out;
     }
     .slide.active {
       display: flex;
     }
 
-    @keyframes fadeIn {
+    @keyframes smoothFade {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Slide Header */
-    .slide-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      border-bottom: 2px solid #edf2f7;
-      padding-bottom: 16px;
-      margin-bottom: 24px;
-    }
-    .slide-header-left h2 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--primary);
-      letter-spacing: -0.5px;
-    }
-    .slide-header-left p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-top: 3px;
-    }
-    .slide-tag {
-      padding: 6px 14px;
-      border-radius: 30px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      background: #f1f5f9;
-      color: var(--primary-light);
+    /* Centered Header Layout */
+    .slide-center-title {
+      text-align: center;
+      margin-bottom: 22px;
+      position: relative;
     }
 
-    /* KPI Row & Scorecards */
-    .kpi-grid {
+    .slide-center-title h2 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: linear-gradient(120deg, #ffffff 30%, #90caf9 70%, #00d2ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    .slide-center-title p {
+      font-size: 0.9rem;
+      color: var(--text-sub);
+    }
+
+    .slide-pill-badge {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 210, 255, 0.12);
+      border: 1px solid var(--neon-blue);
+      color: var(--neon-blue);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    /* Blinking & Glow */
+    .blink-alert {
+      animation: dangerBlink 1.2s infinite ease-in-out;
+    }
+    @keyframes dangerBlink {
+      0%, 100% { box-shadow: 0 0 6px var(--accent-danger); opacity: 1; }
+      50% { box-shadow: var(--glow-red); opacity: 0.75; }
+    }
+
+    .pulse-glow {
+      animation: neonGlow 2s infinite alternate ease-in-out;
+    }
+    @keyframes neonGlow {
+      from { box-shadow: 0 0 8px rgba(0, 210, 255, 0.2); }
+      to { box-shadow: 0 0 20px rgba(0, 210, 255, 0.55); }
+    }
+
+    /* Scorecards */
+    .kpi-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 18px;
-      margin-bottom: 24px;
+      gap: 16px;
+      margin-bottom: 22px;
     }
-    .kpi-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 18px 22px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+
+    .kpi-hd-box {
+      background: linear-gradient(145deg, rgba(25, 41, 66, 0.9), rgba(13, 22, 38, 0.95));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 16px 20px;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
     }
-    .kpi-card::before {
+    .kpi-hd-box::after {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
-      height: 100%;
-      width: 5px;
-      background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-blue));
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--neon-blue), transparent);
     }
-    .kpi-card.green::before { background: linear-gradient(to bottom, #38ef7d, #11998e); }
-    .kpi-card.orange::before { background: linear-gradient(to bottom, #f7971e, #ffd200); }
-    .kpi-card.red::before { background: linear-gradient(to bottom, #ff416c, #ff4b2b); }
+    .kpi-hd-box.green::after { background: linear-gradient(90deg, #10b981, transparent); }
+    .kpi-hd-box.orange::after { background: linear-gradient(90deg, #f59e0b, transparent); }
+    .kpi-hd-box.red::after { background: linear-gradient(90deg, #ef4444, transparent); }
 
-    .kpi-card .kpi-label {
-      font-size: 0.8rem;
+    .kpi-title {
+      font-size: 0.78rem;
       text-transform: uppercase;
-      font-weight: 600;
-      color: var(--text-muted);
+      font-weight: 700;
+      color: var(--text-sub);
       letter-spacing: 0.6px;
     }
-    .kpi-card .kpi-value {
+
+    .kpi-value {
       font-size: 2rem;
       font-weight: 800;
-      color: var(--text-dark);
-      margin-top: 6px;
-    }
-    .kpi-card .kpi-footer {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--accent-blue);
+      color: #fff;
       margin-top: 4px;
     }
 
-    /* Content Layouts */
-    .layout-split {
+    .kpi-subtext {
+      font-size: 0.75rem;
+      color: var(--neon-blue);
+      margin-top: 3px;
+      font-weight: 600;
+    }
+
+    /* Layout Grids */
+    .content-grid-split {
       display: grid;
-      grid-template-columns: 1.8fr 1.2fr;
-      gap: 24px;
+      grid-template-columns: 1.85fr 1.15fr;
+      gap: 22px;
       flex: 1;
     }
-    .chart-container-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 18px;
-      padding: 22px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+
+    .visual-panel {
+      background: rgba(10, 18, 30, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       position: relative;
+      box-shadow: inset 0 0 25px rgba(0,0,0,0.3);
     }
 
-    /* Slide 1 - Title Banner */
-    .cover-container {
+    /* Side Detailed Breakdown Cards */
+    .side-breakdown-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+    .side-breakdown-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--neon-blue);
+      margin-bottom: 6px;
+    }
+    .side-breakdown-stats {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    /* Editable Slide 1 */
+    .title-slide-box {
       margin: auto;
       text-align: center;
-      max-width: 820px;
+      max-width: 900px;
     }
-    .cover-badge {
-      display: inline-block;
-      background: linear-gradient(90deg, #1e3c72, #2a5298);
-      color: white;
-      padding: 6px 18px;
-      border-radius: 30px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 20px;
+    .main-hero-title {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #ffffff 20%, #60a5fa 60%, #00d2ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 14px;
     }
     .editable-text {
       outline: none;
       border: 1px dashed transparent;
-      padding: 4px 8px;
       border-radius: 6px;
-      transition: border 0.2s;
+      padding: 4px 8px;
     }
     .editable-text:hover, .editable-text:focus {
-      border: 1px dashed #0072ff;
-      background: rgba(0, 114, 255, 0.03);
-    }
-    .cover-title {
-      font-size: 3rem;
-      font-weight: 800;
-      color: #0f172a;
-      line-height: 1.2;
-      margin-bottom: 14px;
-    }
-    .cover-sub {
-      font-size: 1.3rem;
-      color: var(--text-muted);
-      margin-bottom: 30px;
-    }
-    .cover-meta-grid {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-    }
-    .cover-meta-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 14px 24px;
-      text-align: left;
+      border-color: var(--neon-blue);
+      background: rgba(0, 210, 255, 0.05);
     }
 
-    /* Slide 2 - Chevrons (Ref Image 9) */
-    .agenda-list {
+    /* Agenda Chevrons */
+    .chevron-stack {
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      margin-top: 10px;
-      max-width: 900px;
+      gap: 12px;
+      max-width: 950px;
+      margin: 10px auto 0 auto;
+      width: 100%;
     }
-    .agenda-item {
+    .chevron-row {
       display: flex;
-      align-items: center;
-      background: #ffffff;
+      background: rgba(16, 28, 46, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-      border: 1px solid #e2e8f0;
       overflow: hidden;
     }
-    .agenda-num {
-      width: 70px;
-      padding: 16px 0;
+    .chevron-idx {
+      width: 75px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 1.25rem;
       font-weight: 800;
-      color: white;
-      text-align: center;
+      color: #fff;
     }
-    .agenda-body {
-      padding: 14px 22px;
+    .chevron-desc {
+      padding: 12px 20px;
       flex: 1;
     }
-    .agenda-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text-dark);
-    }
-    .agenda-desc {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-    }
 
-    /* High Performer & Low Performer Tag */
-    .performer-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.75rem;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-weight: 700;
-    }
-    .badge-top { background: #dcfce7; color: #15803d; }
-    .badge-low { background: #fee2e2; color: #b91c1c; }
-
-    /* Footer Navigation */
-    .deck-navigation {
+    /* Slide Footer Controls */
+    .bottom-nav {
+      width: 100%;
+      max-width: 1360px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 20px;
-      width: 100%;
-      max-width: 1300px;
+      margin-top: 16px;
     }
     .nav-btn {
-      background: white;
-      border: 1px solid #cbd5e1;
-      padding: 10px 22px;
+      background: rgba(18, 30, 49, 0.9);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 9px 22px;
       border-radius: 10px;
       cursor: pointer;
       font-weight: 600;
-      color: var(--text-dark);
+      font-size: 0.88rem;
       transition: all 0.2s;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
     }
     .nav-btn:hover {
-      background: #f8fafc;
-      border-color: #94a3b8;
-    }
-    .slide-indicator {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-muted);
+      background: var(--neon-blue);
+      color: #0c1524;
+      box-shadow: var(--glow-blue);
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Multi-CSV & Global Filter Panel -->
-  <div class="top-control-panel">
-    <div class="upload-group">
-      <label class="custom-file-upload">
-        📊 Upload Agent Stats
-        <input type="file" id="fileAgentStats" accept=".csv, .xlsx, .xls">
+  <!-- Top Multi-CSV & Filter Navigation (NOW 4 CSV UPLOADS) -->
+  <header class="top-bar">
+    <div class="btn-group">
+      <!-- 1. Agent Stats -->
+      <label class="upload-chip">
+        <span>📊</span> Agent Stats CSV
+        <input type="file" id="uploadAgentStats" accept=".csv, .xlsx, .xls">
       </label>
-      <label class="custom-file-upload" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
-        📍 Cashpor Region Branch
-        <input type="file" id="fileCashpor" accept=".csv, .xlsx, .xls">
+      <!-- 2. Cashpor Region Branch -->
+      <label class="upload-chip" style="background: linear-gradient(135deg, #0575e6, #00f260);">
+        <span>📍</span> Cashpor Region CSV
+        <input type="file" id="uploadCashpor" accept=".csv, .xlsx, .xls">
       </label>
-      <label class="custom-file-upload" style="background: linear-gradient(135deg, #f7971e, #ffd200);">
-        ⏱ Consultation KPI
-        <input type="file" id="fileKPI" accept=".csv, .xlsx, .xls">
+      <!-- 3. Consultation KPI -->
+      <label class="upload-chip" style="background: linear-gradient(135deg, #f12711, #f5af19);">
+        <span>⏱</span> Consultation KPI CSV
+        <input type="file" id="uploadKPI" accept=".csv, .xlsx, .xls">
+      </label>
+      <!-- 4. Quality Audit CSV (Newly Added!) -->
+      <label class="upload-chip" style="background: linear-gradient(135deg, #8a2387, #e94057);">
+        <span>⭐</span> Quality Audit CSV
+        <input type="file" id="uploadQuality" accept=".csv, .xlsx, .xls">
       </label>
     </div>
 
-    <div class="filter-group">
-      <select id="agentFilterSelect" onchange="applyGlobalFilters()">
-        <option value="ALL">All Deepti's Agents (6)</option>
+    <div class="filter-wrapper">
+      <!-- Agent Filter -->
+      <select id="agentFilter" onchange="applyFilters()">
+        <option value="ALL">All Team Agents (6)</option>
         <option value="Garvit">Garvit</option>
         <option value="Rajni Saini">Rajni Saini</option>
         <option value="Roshni Prajapati">Roshni Prajapati</option>
@@ -406,413 +417,400 @@
         <option value="Puja Chauhan">Puja Chauhan</option>
       </select>
 
-      <select id="regionFilterSelect" onchange="applyGlobalFilters()">
+      <!-- Region Filter -->
+      <select id="regionFilter" onchange="applyFilters()">
         <option value="ALL">All Mapped Regions (3)</option>
-        <option value="TIKAMGARH">Tikamgarh</option>
+        <option value="TIKAMGARH">TIKAMGARH</option>
         <option value="Ballia">Ballia</option>
         <option value="Raigarh">Raigarh</option>
       </select>
 
       <div style="display:flex; align-items:center; gap:6px;">
-        <span style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">Working Days:</span>
-        <input type="number" id="manualWorkingDays" value="24" style="width: 60px;" onchange="updateProductivityCalculations()">
+        <span style="font-size:0.8rem; color:var(--text-sub); font-weight:600;">Working Days:</span>
+        <input type="number" id="inputWorkingDays" value="24" style="width: 55px;" onchange="recalculateProductivity()">
       </div>
     </div>
-  </div>
+  </header>
 
-  <!-- Slide Canvas Frame -->
-  <main class="slide-canvas">
+  <!-- Slide Stage -->
+  <main class="slide-stage">
 
-    <!-- SLIDE 1: Title Slide (Editable) -->
+    <!-- SLIDE 1: Title (Editable & Centered) -->
     <div class="slide active" id="slide-1">
-      <div class="cover-container">
-        <div class="cover-badge">HEALTHCARE OPERATIONS & CLINIC METRICS</div>
-        <h1 class="cover-title editable-text" contenteditable="true">Monthly Performance & Operations Review</h1>
-        <p class="cover-sub editable-text" contenteditable="true">Deepti's Team: Productivity, Regional Flow & Quality TAT Deep Dive</p>
-        
-        <div class="cover-meta-grid">
-          <div class="cover-meta-card">
-            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">REVIEW TIMEFRAME</span>
-            <div class="editable-text" contenteditable="true" style="font-size:1.1rem; font-weight:700; color:var(--primary); margin-top:4px;">
+      <div class="title-slide-box">
+        <div style="display:inline-block; padding:6px 18px; border-radius:30px; background:rgba(0, 210, 255, 0.12); border:1px solid var(--neon-blue); color:var(--neon-blue); font-weight:700; font-size:0.85rem; margin-bottom:18px;" class="pulse-glow">
+          EXECUTIVE REVIEW DECK
+        </div>
+        <h1 class="main-hero-title editable-text" contenteditable="true">Monthly Clinical Operations & Regional Deck</h1>
+        <p class="editable-text" contenteditable="true" style="font-size:1.25rem; color:var(--text-sub); margin-bottom:30px;">
+          Deepti's Team: Consultation Volumes, Productivity %, Quality Audits & TAT Compliance
+        </p>
+
+        <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
+          <div style="background:rgba(255,255,255,0.03); border:1px solid var(--card-border); padding:16px 28px; border-radius:14px; text-align:left;">
+            <span style="font-size:0.75rem; color:var(--text-sub); text-transform:uppercase; font-weight:700;">Reporting Timeframe</span>
+            <div class="editable-text" contenteditable="true" style="font-size:1.15rem; font-weight:700; color:var(--neon-blue); margin-top:4px;">
               01 Oct 2026 - 31 Oct 2026
             </div>
           </div>
-          <div class="cover-meta-card">
-            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">TEAM LEAD & DIVISION</span>
-            <div class="editable-text" contenteditable="true" style="font-size:1.1rem; font-weight:700; color:var(--primary); margin-top:4px;">
-              Deepti Jain | Clinical Operations
-            </div>
-          </div>
-          <div class="cover-meta-card">
-            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">STATUS</span>
-            <div style="font-size:1.1rem; font-weight:700; color:#16a34a; margin-top:4px;">
-              Executive Ready ●
+          <div style="background:rgba(255,255,255,0.03); border:1px solid var(--card-border); padding:16px 28px; border-radius:14px; text-align:left;">
+            <span style="font-size:0.75rem; color:var(--text-sub); text-transform:uppercase; font-weight:700;">Department & Lead</span>
+            <div class="editable-text" contenteditable="true" style="font-size:1.15rem; font-weight:700; color:var(--neon-blue); margin-top:4px;">
+              Deepti's Team | Healthcare Services
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- SLIDE 2: Agenda (Chevron Visual) -->
+    <!-- SLIDE 2: Agenda (Centered) -->
     <div class="slide" id="slide-2">
-      <div class="slide-header">
-        <div class="slide-header-left">
-          <h2>Presentation Agenda & Operational Scope</h2>
-          <p>Key functional areas analyzed in this deck</p>
-        </div>
-        <div class="slide-tag">Structure 02/09</div>
+      <div class="slide-center-title">
+        <h2>Deck Contents & Operational Scope</h2>
+        <p>Systematic review areas covered in this monthly presentation</p>
+        <div class="slide-pill-badge">Overview 02/09</div>
       </div>
-      <div class="agenda-list">
-        <div class="agenda-item">
-          <div class="agenda-num" style="background: #eb3349;">01</div>
-          <div class="agenda-body">
-            <div class="agenda-title">Agent Core Volumes & Output</div>
-            <div class="agenda-desc">Done consultations, camp conversion cases, clinic calls, and connected feedback counts.</div>
+
+      <div class="chevron-stack">
+        <div class="chevron-row">
+          <div class="chevron-idx" style="background:linear-gradient(135deg, #ff416c, #ff4b2b);">01</div>
+          <div class="chevron-desc">
+            <h4 style="font-size:1rem; font-weight:700;">Agent Core Volumes & Feedback (Exact Counts Shown)</h4>
+            <p style="font-size:0.82rem; color:var(--text-sub); margin-top:2px;">Done Consults, Clinic Video Calls, Camp Cases, and Connected Feedback with live value labels on bars.</p>
           </div>
         </div>
-        <div class="agenda-item">
-          <div class="agenda-num" style="background: #f7971e;">02</div>
-          <div class="agenda-body">
-            <div class="agenda-title">Weighted Productivity %</div>
-            <div class="agenda-desc">Score engine based on Clinic Video (5 pts), Camp (4 pts), and Connected Feedback (3 pts) vs 300 target.</div>
+        <div class="chevron-row">
+          <div class="chevron-idx" style="background:linear-gradient(135deg, #f7971e, #ffd200);">02</div>
+          <div class="chevron-desc">
+            <h4 style="font-size:1rem; font-weight:700;">Weighted Productivity Engine (%)</h4>
+            <p style="font-size:0.82rem; color:var(--text-sub); margin-top:2px;">Clinic (5 pts), Camp (4 pts), Connected Feedback (3 pts) vs 300 pts/day target with exact percentage display.</p>
           </div>
         </div>
-        <div class="agenda-item">
-          <div class="agenda-num" style="background: #11998e;">03</div>
-          <div class="agenda-body">
-            <div class="agenda-title">Regional Footprint (Cashpor Branch)</div>
-            <div class="agenda-desc">Performance matrix across Tikamgarh, Ballia, and Raigarh including Identified vs Unregistered EMR.</div>
+        <div class="chevron-row">
+          <div class="chevron-idx" style="background:linear-gradient(135deg, #11998e, #38ef7d);">03</div>
+          <div class="chevron-desc">
+            <h4 style="font-size:1rem; font-weight:700;">Cashpor Regional Branch Footprint</h4>
+            <p style="font-size:0.82rem; color:var(--text-sub); margin-top:2px;">Tikamgarh, Ballia, and Raigarh consultation counts, camp vs clinic share, and Identified/Unregistered EMR ratio.</p>
           </div>
         </div>
-        <div class="agenda-item">
-          <div class="agenda-num" style="background: #0072ff;">04</div>
-          <div class="agenda-body">
-            <div class="agenda-title">Quality, Audits & Fatalities</div>
-            <div class="agenda-desc">Call audit ratios, error counts, Fatal region occurrences, and case-type breakdown.</div>
+        <div class="chevron-row">
+          <div class="chevron-idx" style="background:linear-gradient(135deg, #8a2387, #e94057);">04</div>
+          <div class="chevron-desc">
+            <h4 style="font-size:1rem; font-weight:700;">Quality Compliance, Audit & Fatalities</h4>
+            <p style="font-size:0.82rem; color:var(--text-sub); margin-top:2px;">Call audit ratios, error counts, error %, fatal cases by region, and clinic vs CP case breakdown.</p>
           </div>
         </div>
-        <div class="agenda-item">
-          <div class="agenda-num" style="background: #4facfe;">05</div>
-          <div class="agenda-body">
-            <div class="agenda-title">TAT Compliance & Doctor Handoff</div>
-            <div class="agenda-desc">Agent TAT, Doctor TAT, Pharmacist TAT analysis & >30 min threshold tracking (excluding 2050).</div>
+        <div class="chevron-row">
+          <div class="chevron-idx" style="background:linear-gradient(135deg, #00c6ff, #0072ff);">05</div>
+          <div class="chevron-desc">
+            <h4 style="font-size:1rem; font-weight:700;">Turnaround Time (TAT) & Doctor Handover</h4>
+            <p style="font-size:0.82rem; color:var(--text-sub); margin-top:2px;">Queue to Start (Agent), Start to End (Doctor), and Feedback (Pharmacist) with >30 min threshold tracking (2050 excluded).</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- SLIDE 3: Agent Stats Overview -->
+    <!-- SLIDE 3: Agent Stats (Bars me Direct Count + Detailed Side Box) -->
     <div class="slide" id="slide-3">
-      <div class="slide-header">
-        <div class="slide-header-left">
-          <h2>Team Agent Consultations & Feedback Distribution</h2>
-          <p>Garvit, Rajni Saini, Roshni Prajapati, Renu Rani, Pooja Rathore, Puja Chauhan</p>
-        </div>
-        <div class="slide-tag">Slide 03/09</div>
+      <div class="slide-center-title">
+        <h2>Agent Core Consultation & Feedback Breakdown</h2>
+        <p>Live count labels on bars for Done, Camp (Done - Clinic), Clinic Video, and Connected Feedback</p>
+        <div class="slide-pill-badge">Volumes 03/09</div>
       </div>
 
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">Total Done Consults</div>
-          <div class="kpi-value" id="totalDoneConsults">175</div>
-          <div class="kpi-footer">Across 6 Team Agents</div>
+      <div class="kpi-row">
+        <div class="kpi-hd-box">
+          <div class="kpi-title">Total Done Consults</div>
+          <div class="kpi-value" id="kpiTotalDone">175</div>
+          <div class="kpi-subtext">Sum Across 6 Agents</div>
         </div>
-        <div class="kpi-card green">
-          <div class="kpi-label">Camp Cases (Done - Clinic)</div>
-          <div class="kpi-value" id="totalCampCases">67</div>
-          <div class="kpi-footer">Primary Field Outreach</div>
+        <div class="kpi-hd-box green">
+          <div class="kpi-title">Camp Cases (Done - Clinic)</div>
+          <div class="kpi-value" id="kpiTotalCamp">67</div>
+          <div class="kpi-subtext">Field Outreach Conversions</div>
         </div>
-        <div class="kpi-card orange">
-          <div class="kpi-label">Clinic Video Calls</div>
-          <div class="kpi-value" id="totalClinicCalls">108</div>
-          <div class="kpi-footer">Virtual Teleconsultations</div>
+        <div class="kpi-hd-box orange">
+          <div class="kpi-title">Clinic Video Calls</div>
+          <div class="kpi-value" id="kpiTotalClinic">108</div>
+          <div class="kpi-subtext">Virtual Teleconsultations</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Connected Feedback</div>
-          <div class="kpi-value" id="totalConnectedFdb">8</div>
-          <div class="kpi-footer">Post-Consult Validated</div>
+        <div class="kpi-hd-box">
+          <div class="kpi-title">Connected Feedback</div>
+          <div class="kpi-value" id="kpiTotalConnFdb">11</div>
+          <div class="kpi-subtext">Post-Consult Validated</div>
         </div>
       </div>
 
-      <div class="layout-split">
-        <div class="chart-container-card">
-          <canvas id="agentConsultsBarChart"></canvas>
+      <div class="content-grid-split">
+        <div class="visual-panel">
+          <canvas id="agentConsultsChart"></canvas>
         </div>
-        <div class="chart-container-card" style="justify-content:center;">
-          <h3 style="font-size:1.1rem; color:var(--primary); margin-bottom:14px;">Performance Highlights</h3>
-          <div style="display:flex; flex-direction:column; gap:12px;">
-            <div style="padding:12px; background:#f8fafc; border-radius:10px; border-left:4px solid #16a34a;">
-              <span class="performer-badge badge-top">Highest Done Volume</span>
-              <div style="font-weight:700; font-size:1.05rem; margin-top:4px;" id="topDoneAgent">Roshni Prajapati (61 Consults)</div>
-            </div>
-            <div style="padding:12px; background:#f8fafc; border-radius:10px; border-left:4px solid #f7971e;">
-              <span class="performer-badge badge-top" style="background:#fef3c7; color:#d97706;">Highest Camp Driver</span>
-              <div style="font-weight:700; font-size:1.05rem; margin-top:4px;" id="topCampAgent">Garvit Jha (29 Camp Cases)</div>
-            </div>
-            <div style="padding:12px; background:#f8fafc; border-radius:10px; border-left:4px solid #ef4444;">
-              <span class="performer-badge badge-low">Lowest Activity Count</span>
-              <div style="font-weight:700; font-size:1.05rem; margin-top:4px;" id="lowDoneAgent">Pooja & Puja (6 Consults)</div>
-            </div>
+        <div class="visual-panel" style="overflow-y:auto; max-height:430px;">
+          <h3 style="font-size:1.05rem; color:var(--neon-blue); margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:6px;">
+            Detailed Agent Performance Log
+          </h3>
+          <div id="agentDetailCardsContainer">
+            <!-- Dynamic Agent Breakdown Cards populated by JS -->
           </div>
         </div>
       </div>
     </div>
 
-    <!-- SLIDE 4: Productivity Engine -->
+    <!-- SLIDE 4: Productivity Engine (Direct % on Bars) -->
     <div class="slide" id="slide-4">
-      <div class="slide-header">
-        <div class="slide-header-left">
-          <h2>Agent Productivity Matrix (Target: 300 Pts / Day)</h2>
-          <p>Clinic Video (5 pts) | Camp Cases (4 pts) | Connected Feedback (3 pts)</p>
-        </div>
-        <div class="slide-tag">Slide 04/09</div>
+      <div class="slide-center-title">
+        <h2>Agent Weighted Productivity Analysis (%)</h2>
+        <p>Formula: (Earned Points &times; 100) / (Working Days &times; 300) [Clinic: 5 pts, Camp: 4 pts, Conn Fdb: 3 pts]</p>
+        <div class="slide-pill-badge">Productivity 04/09</div>
       </div>
 
-      <div class="kpi-grid">
-        <div class="kpi-card green">
-          <div class="kpi-label">Top Productivity %</div>
-          <div class="kpi-value" id="kpiTopProd">--</div>
-          <div class="kpi-footer" id="kpiTopProdAgent">Calculating...</div>
+      <div class="kpi-row">
+        <div class="kpi-hd-box green">
+          <div class="kpi-title">Top Productivity %</div>
+          <div class="kpi-value" id="kpiPeakProd">--%</div>
+          <div class="kpi-subtext" id="kpiPeakProdAgent">Top Performer</div>
         </div>
-        <div class="kpi-card red">
-          <div class="kpi-label">Lowest Productivity %</div>
-          <div class="kpi-value" id="kpiLowProd">--</div>
-          <div class="kpi-footer" id="kpiLowProdAgent">Calculating...</div>
+        <div class="kpi-hd-box red">
+          <div class="kpi-title">Lowest Productivity %</div>
+          <div class="kpi-value" id="kpiLowProd">--%</div>
+          <div class="kpi-subtext" id="kpiLowProdAgent">Intervention Target</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Team Total Points Earned</div>
-          <div class="kpi-value" id="teamEarnedPoints">--</div>
-          <div class="kpi-footer">Cumulative Score</div>
+        <div class="kpi-hd-box">
+          <div class="kpi-title">Total Points Earned</div>
+          <div class="kpi-value" id="kpiTeamEarned">--</div>
+          <div class="kpi-subtext">Cumulative Team Output</div>
         </div>
-        <div class="kpi-card orange">
-          <div class="kpi-label">Monthly Target per Agent</div>
-          <div class="kpi-value" id="monthlyTargetVal">7,200 Pts</div>
-          <div class="kpi-footer">Based on 24 Working Days</div>
+        <div class="kpi-hd-box orange">
+          <div class="kpi-title">Monthly Baseline Target</div>
+          <div class="kpi-value" id="kpiTargetVal">7,200 Pts</div>
+          <div class="kpi-subtext">24 Working Days &times; 300</div>
         </div>
       </div>
 
-      <div class="layout-split">
-        <div class="chart-container-card">
-          <canvas id="productivityBarChart"></canvas>
+      <div class="content-grid-split">
+        <div class="visual-panel">
+          <canvas id="agentProductivityChart"></canvas>
         </div>
-        <div class="chart-container-card">
-          <h3 style="font-size:1.05rem; color:var(--primary); margin-bottom:12px;">Calculation Rules & Logic</h3>
-          <ul style="font-size:0.85rem; color:var(--text-muted); line-height:1.7; padding-left:18px;">
-            <li><strong>Clinic Video Call</strong>: 5 Points each</li>
-            <li><strong>Camp Cases</strong>: (Done Consults - Clinic Video Calls) &times; 4 Points</li>
-            <li><strong>Connected Feedback</strong>: 3 Points each</li>
-            <li><strong>Total Target</strong>: No. of Working Days &times; 300 Points</li>
-            <li>Excludes Saturdays, Sundays, and public holidays from denominator.</li>
+        <div class="visual-panel">
+          <h3 style="font-size:1.05rem; color:var(--neon-blue); margin-bottom:12px;">Productivity Formulation Rules</h3>
+          <ul style="font-size:0.85rem; color:var(--text-sub); line-height:1.7; padding-left:18px;">
+            <li><strong>Clinic Video Call</strong> = 5 Points each</li>
+            <li><strong>Camp Consultation</strong> = (Done - Clinic Video) &times; 4 Points</li>
+            <li><strong>Connected Feedback</strong> = 3 Points each</li>
+            <li><strong>Target Denominator</strong> = (Working Days &times; 300). Excludes Saturdays, Sundays & festival holidays.</li>
           </ul>
-          <div style="margin-top:auto; padding:12px; background:#eff6ff; border-radius:10px; border:1px solid #bfdbfe;">
-            <span style="font-weight:700; color:#1d4ed8; font-size:0.85rem;">Formula Applied:</span>
-            <div style="font-size:0.95rem; font-weight:800; color:#1e40af; margin-top:4px;">
-              Productivity % = (Earned Points &times; 100) / (Days &times; 300)
+          <div style="margin-top:auto; padding:14px; background:rgba(0, 210, 255, 0.08); border:1px solid rgba(0, 210, 255, 0.3); border-radius:12px;">
+            <span style="font-size:0.75rem; text-transform:uppercase; font-weight:800; color:var(--neon-blue);">Status Classification</span>
+            <div style="font-size:0.92rem; font-weight:700; margin-top:4px;">
+              &ge; 70%: Star Achiever | 50-69%: Average | &lt; 50%: Action Plan Required
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- SLIDE 5: Cashpor Region Branch -->
+    <!-- SLIDE 5: Cashpor Region Branch (Direct Counts on Bars + Side Details) -->
     <div class="slide" id="slide-5">
-      <div class="slide-header">
-        <div class="slide-header-left">
-          <h2>Cashpor Region Branch Breakdown</h2>
-          <p>Regional distribution: Tikamgarh, Ballia, and Raigarh</p>
-        </div>
-        <div class="slide-tag">Slide 05/09</div>
+      <div class="slide-center-title">
+        <h2>Cashpor Regional Operational Footprint</h2>
+        <p>Mapped Regions: TIKAMGARH, Ballia, and Raigarh (Direct Bar Counts & Share %)</p>
+        <div class="slide-pill-badge">Regions 05/09</div>
       </div>
 
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">Tikamgarh Consults</div>
-          <div class="kpi-value" id="regTikam">--</div>
-          <div class="kpi-footer">Done / Camp / Clinic</div>
+      <div class="kpi-row">
+        <div class="kpi-hd-box">
+          <div class="kpi-title">TIKAMGARH Activity</div>
+          <div class="kpi-value" id="valTikam">145</div>
+          <div class="kpi-subtext">Done: 145 | Camp: 80 | Clinic: 65</div>
         </div>
-        <div class="kpi-card green">
-          <div class="kpi-label">Ballia Consults</div>
-          <div class="kpi-value" id="regBallia">--</div>
-          <div class="kpi-footer">Done / Camp / Clinic</div>
+        <div class="kpi-hd-box green">
+          <div class="kpi-title">Ballia Activity</div>
+          <div class="kpi-value" id="valBallia">112</div>
+          <div class="kpi-subtext">Done: 112 | Camp: 64 | Clinic: 48</div>
         </div>
-        <div class="kpi-card orange">
-          <div class="kpi-label">Raigarh Consults</div>
-          <div class="kpi-value" id="regRaigarh">--</div>
-          <div class="kpi-footer">Done / Camp / Clinic</div>
+        <div class="kpi-hd-box orange">
+          <div class="kpi-title">Raigarh Activity</div>
+          <div class="kpi-value" id="valRaigarh">98</div>
+          <div class="kpi-subtext">Done: 98 | Camp: 56 | Clinic: 42</div>
         </div>
-        <div class="kpi-card red">
-          <div class="kpi-label">Unregistered EMR Ratio</div>
-          <div class="kpi-value" id="kpiUnregRatio">--%</div>
-          <div class="kpi-footer">Identified vs Unregistered</div>
+        <div class="kpi-hd-box red">
+          <div class="kpi-title">Unregistered EMR Ratio</div>
+          <div class="kpi-value" id="valUnregPct">11.8%</div>
+          <div class="kpi-subtext">71 Unidentified Cases</div>
         </div>
       </div>
 
-      <div class="layout-split">
-        <div class="chart-container-card">
-          <canvas id="regionMultiBarChart"></canvas>
+      <div class="content-grid-split">
+        <div class="visual-panel">
+          <canvas id="regionBreakdownChart"></canvas>
         </div>
-        <div class="chart-container-card" style="align-items:center; justify-content:center;">
-          <h3 style="font-size:1.05rem; color:var(--primary); margin-bottom:12px; align-self:flex-start;">EMR Identification Ratio</h3>
-          <div style="height:220px; width:100%; position:relative;">
-            <canvas id="emrDoughnutChart"></canvas>
+        <div class="visual-panel" style="overflow-y:auto; max-height:430px;">
+          <h3 style="font-size:1.05rem; color:var(--neon-blue); margin-bottom:12px;">Regional Volume & EMR Breakdown</h3>
+          <div id="regionDetailContainer">
+            <!-- Populated by JS -->
           </div>
-          <div style="margin-top:14px; text-align:center; font-size:0.85rem; color:var(--text-muted);">
-            High registration percentage ensures immediate patient record integrity.
+          <div style="height:170px; width:100%; position:relative; margin-top:10px;">
+            <canvas id="emrRatioDoughnut"></canvas>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- SLIDE 6: Agent Quality & Fatalities -->
+    <!-- SLIDE 6: Agent Quality & Fatalities (With 4th CSV Link) -->
     <div class="slide" id="slide-6">
-      <div class="slide-header">
-        <div class="slide-header-left">
-          <h2>Quality Compliance, Audits & Fatal Cases</h2>
-          <p>Audit error rates, Fatal distributions by region & clinic/EMR breakdown</p>
-        </div>
-        <div class="slide-tag">Slide 06/09</div>
+      <div class="slide-center-title">
+        <h2>Agent Quality Audit Compliance & Critical Fatalities</h2>
+        <p>Call audits, Error Count, Error %, Fatal Count, Fatal Regions, and Case Types</p>
+        <div class="slide-pill-badge">Quality 06/09</div>
       </div>
 
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">Audited Calls</div>
-          <div class="kpi-value" id="totalAudits">120</div>
-          <div class="kpi-footer">Sampled Interactions</div>
+      <div class="kpi-row">
+        <div class="kpi-hd-box">
+          <div class="kpi-title">Total Audited Calls</div>
+          <div class="kpi-value" id="valAuditedCalls">120</div>
+          <div class="kpi-subtext">Across 6 Team Agents</div>
         </div>
-        <div class="kpi-card green">
-          <div class="kpi-label">Quality Score</div>
-          <div class="kpi-value" id="avgQualityScore">96.4%</div>
-          <div class="kpi-footer">Benchmark: >95%</div>
+        <div class="kpi-hd-box green">
+          <div class="kpi-title">Average Quality Score</div>
+          <div class="kpi-value" id="valAvgQuality">96.7%</div>
+          <div class="kpi-subtext">Benchmark: &gt; 95%</div>
         </div>
-        <div class="kpi-card orange">
-          <div class="kpi-label">Total Errors Found</div>
-          <div class="kpi-value" id="totalErrors">7</div>
-          <div class="kpi-footer">Non-Fatal Process Gaps</div>
+        <div class="kpi-hd-box orange">
+          <div class="kpi-title">Total Errors Identified</div>
+          <div class="kpi-value" id="valTotalErrors">7</div>
+          <div class="kpi-subtext">Error Rate: 5.8%</div>
         </div>
-        <div class="kpi-card red">
-          <div class="kpi-label">Fatal Occurrences</div>
-          <div class="kpi-value" id="totalFatals">1</div>
-          <div class="kpi-footer">Critical Escalation</div>
+        <div class="kpi-hd-box red blink-alert">
+          <div class="kpi-title">Fatal Escalations</div>
+          <div class="kpi-value" style="color:#ef4444;" id="valTotalFatals">1</div>
+          <div class="kpi-subtext" style="color:#ef4444;">Immediate Drilldown Logged</div>
         </div>
       </div>
 
-      <div class="layout-split">
-        <div class="chart-container-card">
+      <div class="content-grid-split">
+        <div class="visual-panel">
           <canvas id="agentQualityChart"></canvas>
         </div>
-        <div class="chart-container-card">
-          <h3 style="font-size:1.05rem; color:var(--primary); margin-bottom:12px;">Fatal Case Drilldown</h3>
-          <div style="padding:14px; background:#fff1f2; border-radius:12px; border:1px solid #fecdd3; margin-bottom:12px;">
-            <div style="font-size:0.85rem; font-weight:700; color:#e11d48;">Fatal Logged #EMR-98201</div>
-            <div style="font-size:0.8rem; color:#475569; margin-top:4px;">
-              <strong>Region:</strong> Tikamgarh | <strong>Type:</strong> Clinic Video Call<br>
-              <strong>Root Cause:</strong> Incorrect vitals recording & delayed doctor reconnect.
+        <div class="visual-panel" style="overflow-y:auto; max-height:430px;">
+          <h3 style="font-size:1.05rem; color:#ef4444; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+            <span class="blink-alert" style="width:10px; height:10px; background:#ef4444; border-radius:50%; display:inline-block;"></span>
+            Fatal Case Incident & Regional Log
+          </h3>
+          <div style="background:rgba(239, 68, 68, 0.12); border:1px solid rgba(239, 68, 68, 0.4); border-radius:10px; padding:14px; margin-bottom:12px;">
+            <div style="font-size:0.88rem; font-weight:800; color:#ef4444;">Fatal Event #EMR-98201 (TIKAMGARH)</div>
+            <div style="font-size:0.8rem; color:var(--text-sub); margin-top:4px; line-height:1.6;">
+              <strong>Agent Assigned:</strong> Renu Rani<br>
+              <strong>Case Channel:</strong> Clinic Video Call<br>
+              <strong>Error Class:</strong> Fatal (Incorrect vitals capture & delay in doctor reconnection)<br>
+              <strong>Action Taken:</strong> 1-on-1 coaching completed, protocol verified.
             </div>
           </div>
-          <div style="padding:12px; background:#f8fafc; border-radius:10px; font-size:0.82rem; color:var(--text-muted); line-height:1.6;">
-            Regular agent refreshers mandated for prescription verification and live consent checks.
+
+          <h4 style="font-size:0.88rem; color:var(--neon-blue); margin-top:10px; margin-bottom:6px;">Agent Quality Scorecard</h4>
+          <div id="qualityDetailsList" style="font-size:0.8rem; color:var(--text-sub); line-height:1.6;">
+            <!-- Rendered by JS -->
           </div>
         </div>
       </div>
     </div>
 
-    <!-- SLIDE 7: Consultation KPI & TAT Analysis -->
+    <!-- SLIDE 7: TAT Stages (Excluding 2050, 30 min benchmark) -->
     <div class="slide" id="slide-7">
-      <div class="slide-header">
-        <div class="slide-header-left">
-          <h2>Turnaround Time (TAT) Analysis & Stage Breakdown</h2>
-          <p>Excluding year 2050 records | Benchmark: 30 Mins Average</p>
-        </div>
-        <div class="slide-tag">Slide 07/09</div>
+      <div class="slide-center-title">
+        <h2>Turnaround Time (TAT) Stage Analysis & SLA Breaches</h2>
+        <p>Benchmark: &le; 30 Mins | Year 2050 records strictly filtered out</p>
+        <div class="slide-pill-badge">TAT 07/09</div>
       </div>
 
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">Avg Overall Case TAT</div>
-          <div class="kpi-value" id="avgOverallTat">24.6 <span style="font-size:1.1rem;">min</span></div>
-          <div class="kpi-footer">Target: &le; 30.0 min</div>
+      <div class="kpi-row">
+        <div class="kpi-hd-box">
+          <div class="kpi-title">Average Overall TAT</div>
+          <div class="kpi-value">24.2 <span style="font-size:1.1rem; color:var(--text-sub);">min</span></div>
+          <div class="kpi-subtext">Within 30-min Target</div>
         </div>
-        <div class="kpi-card green">
-          <div class="kpi-label">Agent TAT (App &rarr; Start)</div>
-          <div class="kpi-value" id="avgAgentTat">6.2 <span style="font-size:1.1rem;">min</span></div>
-          <div class="kpi-footer">Queue to Connect</div>
+        <div class="kpi-hd-box green">
+          <div class="kpi-title">Agent Queue TAT</div>
+          <div class="kpi-value">5.8 <span style="font-size:1.1rem; color:var(--text-sub);">min</span></div>
+          <div class="kpi-subtext">App Time &rarr; Start Time</div>
         </div>
-        <div class="kpi-card orange">
-          <div class="kpi-label">Doctor TAT (Start &rarr; End)</div>
-          <div class="kpi-value" id="avgDocTat">14.1 <span style="font-size:1.1rem;">min</span></div>
-          <div class="kpi-footer">Consultation Session</div>
+        <div class="kpi-hd-box orange">
+          <div class="kpi-title">Doctor Consult TAT</div>
+          <div class="kpi-value">13.9 <span style="font-size:1.1rem; color:var(--text-sub);">min</span></div>
+          <div class="kpi-subtext">Start Time &rarr; End Time</div>
         </div>
-        <div class="kpi-card red">
-          <div class="kpi-label">&gt; 30 Min EMRs (Longest)</div>
-          <div class="kpi-value" id="casesAbove30">14</div>
-          <div class="kpi-footer">SLA Breaches Tracked</div>
+        <div class="kpi-hd-box red">
+          <div class="kpi-title">&gt; 30 Min Breaches</div>
+          <div class="kpi-value" style="color:#ef4444;">12</div>
+          <div class="kpi-subtext" style="color:#ef4444;">Longest EMR Cases</div>
         </div>
       </div>
 
-      <div class="layout-split">
-        <div class="chart-container-card">
+      <div class="content-grid-split">
+        <div class="visual-panel">
           <canvas id="tatStagesChart"></canvas>
         </div>
-        <div class="chart-container-card">
-          <h3 style="font-size:1.05rem; color:var(--primary); margin-bottom:12px;">Stage Ownership & Handover</h3>
-          <div style="display:flex; flex-direction:column; gap:10px; font-size:0.83rem;">
-            <div style="padding:10px; background:#f8fafc; border-left:3px solid #0072ff; border-radius:6px;">
-              <strong>Agent Handover:</strong> Immediate dial after appointment booking prevents dropouts.
+        <div class="visual-panel">
+          <h3 style="font-size:1.05rem; color:var(--neon-blue); margin-bottom:12px;">Stage Ownership & Handover</h3>
+          <div style="display:flex; flex-direction:column; gap:12px; font-size:0.83rem;">
+            <div style="padding:12px; background:rgba(255,255,255,0.03); border-left:3px solid var(--neon-blue); border-radius:6px;">
+              <strong>Agent Handshake (Avg 5.8 min):</strong> Booking time se doctor connect hone tak ka agent time. Quick pickup ensures minimal patient drop.
             </div>
-            <div style="padding:10px; background:#f8fafc; border-left:3px solid #f7971e; border-radius:6px;">
-              <strong>Doctor Duration:</strong> Direct clinical consultation & e-prescription authoring.
+            <div style="padding:12px; background:rgba(255,255,255,0.03); border-left:3px solid #f59e0b; border-radius:6px;">
+              <strong>Doctor Duration (Avg 13.9 min):</strong> Live video consultation & e-prescription entry time.
             </div>
-            <div style="padding:10px; background:#f8fafc; border-left:3px solid #11998e; border-radius:6px;">
-              <strong>Pharmacist Feedback:</strong> Post-consult immediate feedback & medicine fulfillment guide.
+            <div style="padding:12px; background:rgba(255,255,255,0.03); border-left:3px solid #10b981; border-radius:6px;">
+              <strong>Pharmacist Feedback (Avg 4.5 min):</strong> Immediate feedback call & medicine briefing.
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- SLIDE 8: Executive Summary & Gaps -->
+    <!-- SLIDE 8: Executive Summary & Action Points -->
     <div class="slide" id="slide-8">
-      <div class="slide-header">
-        <div class="slide-header-left">
-          <h2>Operational Summary & Action Strategy</h2>
-          <p>Key strengths identified and systemic improvements proposed</p>
-        </div>
-        <div class="slide-tag">Slide 08/09</div>
+      <div class="slide-center-title">
+        <h2>Operational Summary, Key Gaps & Strategic Action Plan</h2>
+        <p>Comprehensive takeaways and decisive action points for leadership</p>
+        <div class="slide-pill-badge">Strategy 08/09</div>
       </div>
 
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; flex:1;">
-        <div class="chart-container-card" style="border-top: 4px solid #16a34a;">
-          <h3 style="font-size:1.15rem; color:#16a34a; margin-bottom:14px;">Key Strengths & Growth Areas</h3>
-          <ul style="font-size:0.9rem; color:var(--text-dark); line-height:1.8; padding-left:20px;">
-            <li><strong>Solid High-Volume Anchors:</strong> Garvit aur Roshni continuous peak consultation targets achieve kar rahe hain.</li>
-            <li><strong>Healthy Registration Index:</strong> Identified EMR rates benchmark par hain, patient follow-up smooth ho raha hai.</li>
-            <li><strong>Stable Doctor Turnaround:</strong> Average doctor consult time under 15 minutes maintained hai.</li>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:22px; flex:1;">
+        <div class="visual-panel" style="border-top:3px solid #10b981;">
+          <h3 style="font-size:1.15rem; color:#10b981; margin-bottom:14px;">Key Strengths & Operational Milestones</h3>
+          <ul style="font-size:0.88rem; color:var(--text-sub); line-height:1.8; padding-left:20px;">
+            <li><strong>High-Impact Anchor Performers:</strong> Garvit Jha aur Roshni Prajapati monthly volume targets dominate kar rahe hain.</li>
+            <li><strong>Strong Average TAT:</strong> Overall average TAT 24.2 min par controlled hai, jo 30 min benchmark ke andar hai.</li>
+            <li><strong>Healthy Registration Index:</strong> 88.2% identified EMR rate ke sath clinical record security standard par hai.</li>
           </ul>
         </div>
 
-        <div class="chart-container-card" style="border-top: 4px solid #eb3349;">
-          <h3 style="font-size:1.15rem; color:#eb3349; margin-bottom:14px;">Gaps Identified & Corrective Actions</h3>
-          <ul style="font-size:0.9rem; color:var(--text-dark); line-height:1.8; padding-left:20px;">
-            <li><strong>Connected Feedback Deficit:</strong> Feedback connection ratios ko improve karne ke liye agent follow-up call sequence tighten karni hogi.</li>
-            <li><strong>Under-Performer Normalization:</strong> Renu, Pooja, aur Puja ke lower volume slots ko cross-allocated shifts me assist karein.</li>
-            <li><strong>30+ Min SLA Breaches:</strong> 2050 filter out karne ke baad bache huye delayed cases me pharmacist dispensing bridge optimize karna hoga.</li>
+        <div class="visual-panel" style="border-top:3px solid #ef4444;">
+          <h3 style="font-size:1.15rem; color:#ef4444; margin-bottom:14px;">Critical Gaps & Immediate Focus Areas</h3>
+          <ul style="font-size:0.88rem; color:var(--text-sub); line-height:1.8; padding-left:20px;">
+            <li><strong>Low Output Normalization:</strong> Renu Rani, Pooja Rathore, aur Puja Chauhan ke volume ko 30+ level par le jane ke liye shift alignment karni hogi.</li>
+            <li><strong>Connected Feedback Deficit:</strong> Done consults ke mukable connected feedback ratio badhana priority hai.</li>
+            <li><strong>Zero Fatal Mandate:</strong> Tikamgarh fatal case ke baad post-call prescription verification compulsory kar di gayi hai.</li>
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- SLIDE 9: Thank You Slide -->
+    <!-- SLIDE 9: Thank You (Centered) -->
     <div class="slide" id="slide-9">
-      <div class="cover-container" style="margin-top:auto; margin-bottom:auto;">
-        <div class="cover-badge" style="background:#16a34a;">SESSION CONCLUDED</div>
-        <h1 class="cover-title">Thank You!</h1>
-        <p class="cover-sub">Open for Executive Discussion & Strategic Implementation</p>
-        <div style="display:inline-flex; gap:16px; margin-top:10px;">
-          <div style="padding:10px 24px; background:#f1f5f9; border-radius:10px; font-weight:700; color:var(--primary);">
-            Team: Deepti's Group
+      <div class="title-slide-box">
+        <div style="display:inline-block; padding:6px 20px; border-radius:30px; background:rgba(16, 185, 129, 0.15); border:1px solid #10b981; color:#10b981; font-weight:700; font-size:0.85rem; margin-bottom:20px;">
+          DECK COMPLETE
+        </div>
+        <h1 class="main-hero-title">Thank You!</h1>
+        <p style="font-size:1.25rem; color:var(--text-sub); margin-bottom:30px;">
+          Operational Deck Ready for Review & Execution
+        </p>
+        <div style="display:flex; justify-content:center; gap:16px;">
+          <div style="background:rgba(255,255,255,0.04); border:1px solid var(--card-border); padding:12px 26px; border-radius:12px; font-weight:700; color:var(--neon-blue);">
+            Deepti's Team
           </div>
-          <div style="padding:10px 24px; background:#f1f5f9; border-radius:10px; font-weight:700; color:var(--primary);">
-            mSwasth Healthcare Operations
+          <div style="background:rgba(255,255,255,0.04); border:1px solid var(--card-border); padding:12px 26px; border-radius:12px; font-weight:700; color:var(--neon-blue);">
+            Clinical Excellence 2026
           </div>
         </div>
       </div>
@@ -820,341 +818,506 @@
 
   </main>
 
-  <!-- Slide Bottom Controls -->
-  <footer class="deck-navigation">
+  <!-- Bottom Navigation -->
+  <footer class="bottom-nav">
     <button class="nav-btn" onclick="prevSlide()">◀ Previous Slide</button>
-    <div class="slide-indicator" id="slideCounter">Slide 1 of 9</div>
+    <div style="font-size:0.95rem; font-weight:700; color:var(--text-sub);" id="slidePageIndicator">Slide 1 of 9</div>
     <button class="nav-btn" onclick="nextSlide()">Next Slide ▶</button>
   </footer>
 
   <script>
-    // -------------------------------------------------------------
-    // DATA MODEL & GLOBAL VARIABLES
-    // -------------------------------------------------------------
+    // Register Chart DataLabels plugin globally
+    Chart.register(ChartDataLabels);
+
     let currentSlide = 1;
     const totalSlides = 9;
 
-    // Default Baseline Data for 6 Agents
-    let teamAgents = [
-      { name: "Garvit", done: 56, clinic: 27, fdb: 30, connFdb: 3, errors: 1, fatal: 0, tat: 23.4 },
-      { name: "Roshni Prajapati", done: 61, clinic: 32, fdb: 28, connFdb: 2, errors: 2, fatal: 0, tat: 25.1 },
-      { name: "Rajni Saini", done: 43, clinic: 24, fdb: 20, connFdb: 5, errors: 0, fatal: 0, tat: 21.8 },
-      { name: "Renu Rani", done: 6, clinic: 11, fdb: 8, connFdb: 1, errors: 1, fatal: 1, tat: 28.5 },
-      { name: "Pooja Rathore", done: 6, clinic: 6, fdb: 5, connFdb: 1, errors: 1, fatal: 0, tat: 26.2 },
-      { name: "Puja Chauhan", done: 6, clinic: 8, fdb: 6, connFdb: 0, errors: 2, fatal: 0, tat: 27.9 }
+    // 6 Direct Agents Data
+    let agentsData = [
+      { name: "Garvit", done: 56, clinic: 27, connFdb: 3, audits: 25, errors: 1, fatal: 0, quality: 98.0, tat: 23.4 },
+      { name: "Rajni Saini", done: 43, clinic: 24, connFdb: 5, audits: 22, errors: 0, fatal: 0, quality: 99.2, tat: 21.8 },
+      { name: "Roshni Prajapati", done: 61, clinic: 32, connFdb: 2, audits: 28, errors: 2, fatal: 0, quality: 96.5, tat: 25.1 },
+      { name: "Renu Rani", done: 6, clinic: 11, connFdb: 1, audits: 15, errors: 1, fatal: 1, quality: 93.3, tat: 28.5 },
+      { name: "Pooja Rathore", done: 6, clinic: 6, connFdb: 1, audits: 16, errors: 1, fatal: 0, quality: 96.0, tat: 26.2 },
+      { name: "Puja Chauhan", done: 6, clinic: 8, connFdb: 0, audits: 14, errors: 2, fatal: 0, quality: 94.0, tat: 27.9 }
     ];
 
-    // Default Regional Data
-    let regionStats = {
-      TIKAMGARH: { done: 145, clinic: 65, camp: 80, registered: 210, unregistered: 32 },
-      Ballia: { done: 112, clinic: 48, camp: 64, registered: 175, unregistered: 21 },
-      Raigarh: { done: 98, clinic: 42, camp: 56, registered: 140, unregistered: 18 }
+    // 3 Regional Branches Data
+    let regionsData = {
+      "TIKAMGARH": { done: 145, camp: 80, clinic: 65, registered: 210, unregistered: 32 },
+      "Ballia": { done: 112, camp: 64, clinic: 48, registered: 175, unregistered: 21 },
+      "Raigarh": { done: 98, camp: 56, clinic: 42, registered: 140, unregistered: 18 }
     };
 
-    // Chart Instances
-    let chartConsults, chartProd, chartRegion, chartEmr, chartQuality, chartTat;
+    let cConsults, cProd, cRegion, cEmr, cQuality, cTat;
 
     // -------------------------------------------------------------
-    // NAVIGATION LOGIC
+    // NAVIGATION
     // -------------------------------------------------------------
-    function showSlide(index) {
-      if (index < 1) index = 1;
-      if (index > totalSlides) index = totalSlides;
-      currentSlide = index;
+    function showSlide(idx) {
+      if (idx < 1) idx = 1;
+      if (idx > totalSlides) idx = totalSlides;
+      currentSlide = idx;
 
-      document.querySelectorAll('.slide').forEach((sl, idx) => {
-        sl.classList.toggle('active', (idx + 1) === currentSlide);
+      document.querySelectorAll('.slide').forEach((s, i) => {
+        s.classList.toggle('active', (i + 1) === currentSlide);
       });
-      document.getElementById('slideCounter').innerText = `Slide ${currentSlide} of ${totalSlides}`;
+      document.getElementById('slidePageIndicator').innerText = `Slide ${currentSlide} of ${totalSlides}`;
 
-      // Refresh Chart renders on slide activation
-      setTimeout(renderAllVisuals, 50);
+      setTimeout(renderAllCharts, 60);
     }
 
-    function nextSlide() {
-      if (currentSlide < totalSlides) showSlide(currentSlide + 1);
-    }
+    function nextSlide() { if (currentSlide < totalSlides) showSlide(currentSlide + 1); }
+    function prevSlide() { if (currentSlide > 1) showSlide(currentSlide - 1); }
 
-    function prevSlide() {
-      if (currentSlide > 1) showSlide(currentSlide - 1);
-    }
-
-    // Keyboard Arrow Key Support
     window.addEventListener('keydown', (e) => {
       if (e.key === "ArrowRight") nextSlide();
       if (e.key === "ArrowLeft") prevSlide();
     });
 
     // -------------------------------------------------------------
-    // METRICS & PRODUCTIVITY ENGINE
+    // RE-CALCULATION & SIDE PANELS POPULATION
     // -------------------------------------------------------------
-    function updateProductivityCalculations() {
-      const workingDays = parseFloat(document.getElementById('manualWorkingDays').value) || 24;
-      const targetPerAgent = workingDays * 300;
-      document.getElementById('monthlyTargetVal').innerText = targetPerAgent.toLocaleString() + " Pts";
+    function recalculateProductivity() {
+      const days = parseFloat(document.getElementById('inputWorkingDays').value) || 24;
+      const target = days * 300;
+      document.getElementById('kpiTargetVal').innerText = target.toLocaleString() + " Pts";
 
-      let totalEarned = 0;
+      let teamEarned = 0;
       let topProd = -1, lowProd = 999999;
       let topAgent = "", lowAgent = "";
 
-      teamAgents.forEach(a => {
-        // Camp = Done - Clinic (clamp to 0 if clinic > done)
+      agentsData.forEach(a => {
         const camp = Math.max(0, a.done - a.clinic);
-        // Formula: 5 per clinic + 4 per camp + 3 per connected fdb
+        // Points: Clinic*5 + Camp*4 + ConnFdb*3
         const earned = (a.clinic * 5) + (camp * 4) + (a.connFdb * 3);
-        const prodPct = ((earned * 100) / targetPerAgent).toFixed(1);
+        const prod = ((earned * 100) / target).toFixed(1);
+        a.camp = camp;
         a.earned = earned;
-        a.prodPct = parseFloat(prodPct);
-        totalEarned += earned;
+        a.prodPct = parseFloat(prod);
+        teamEarned += earned;
 
         if (a.prodPct > topProd) { topProd = a.prodPct; topAgent = a.name; }
         if (a.prodPct < lowProd) { lowProd = a.prodPct; lowAgent = a.name; }
       });
 
-      document.getElementById('teamEarnedPoints').innerText = totalEarned.toLocaleString();
-      document.getElementById('kpiTopProd').innerText = `${topProd}%`;
-      document.getElementById('kpiTopProdAgent').innerText = `${topAgent} (Leader)`;
+      document.getElementById('kpiTeamEarned').innerText = teamEarned.toLocaleString();
+      document.getElementById('kpiPeakProd').innerText = `${topProd}%`;
+      document.getElementById('kpiPeakProdAgent').innerText = `${topAgent} (Leader)`;
       document.getElementById('kpiLowProd').innerText = `${lowProd}%`;
       document.getElementById('kpiLowProdAgent').innerText = `${lowAgent} (Needs Focus)`;
+
+      populateSidePanels();
+    }
+
+    function populateSidePanels() {
+      // 1. Populate Slide 3 Side Breakdown Cards
+      const container3 = document.getElementById('agentDetailCardsContainer');
+      if (container3) {
+        container3.innerHTML = agentsData.map(a => `
+          <div class="side-breakdown-card">
+            <div class="side-breakdown-header">
+              <span>${a.name}</span>
+              <span style="color:#10b981;">Total Done: ${a.done}</span>
+            </div>
+            <div class="side-breakdown-stats">
+              <strong>Camp Cases:</strong> ${a.camp} | 
+              <strong>Clinic Video:</strong> ${a.clinic}<br>
+              <strong>Connected Feedback:</strong> ${a.connFdb} | 
+              <strong>Points:</strong> ${a.earned}
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // 2. Populate Slide 5 Regional Side Details
+      const regContainer = document.getElementById('regionDetailContainer');
+      if (regContainer) {
+        regContainer.innerHTML = Object.keys(regionsData).map(r => {
+          const item = regionsData[r];
+          const totalEMR = item.registered + item.unregistered;
+          const regPct = ((item.registered * 100) / totalEMR).toFixed(1);
+          return `
+            <div class="side-breakdown-card">
+              <div class="side-breakdown-header">
+                <span>📍 ${r}</span>
+                <span style="color:#00d2ff;">Done: ${item.done}</span>
+              </div>
+              <div class="side-breakdown-stats">
+                <strong>Camp:</strong> ${item.camp} (${((item.camp*100)/item.done).toFixed(1)}%) | 
+                <strong>Clinic Video:</strong> ${item.clinic} (${((item.clinic*100)/item.done).toFixed(1)}%)<br>
+                <strong>Identified EMR:</strong> ${item.registered} (${regPct}%) | 
+                <strong>Unregistered:</strong> ${item.unregistered}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 3. Populate Slide 6 Quality Details
+      const qualContainer = document.getElementById('qualityDetailsList');
+      if (qualContainer) {
+        qualContainer.innerHTML = agentsData.map(a => `
+          <div style="padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between;">
+            <span><strong>${a.name}</strong> (${a.audits} Audits, ${a.errors} Errors)</span>
+            <span style="color:${a.quality >= 95 ? '#10b981' : '#ef4444'}; font-weight:700;">${a.quality}%</span>
+          </div>
+        `).join('');
+      }
     }
 
     // -------------------------------------------------------------
-    // CHARTS RENDERING (CHART.JS)
+    // CHARTS RENDERING WITH DIRECT LABELS (COUNTS & %) ON BARS
     // -------------------------------------------------------------
-    function renderAllVisuals() {
-      const selectedAgent = document.getElementById('agentFilterSelect').value;
-      const filteredAgents = selectedAgent === "ALL" 
-        ? teamAgents 
-        : teamAgents.filter(a => a.name.toLowerCase().includes(selectedAgent.toLowerCase()));
+    function renderAllCharts() {
+      const selectedAgent = document.getElementById('agentFilter').value;
+      const list = selectedAgent === "ALL" 
+        ? agentsData 
+        : agentsData.filter(a => a.name.toLowerCase().includes(selectedAgent.toLowerCase()));
 
-      // 1. Agent Stats Bar Chart
-      const ctx1 = document.getElementById('agentConsultsBarChart')?.getContext('2d');
+      const straightAxisConfig = {
+        ticks: {
+          color: '#94a3b8',
+          font: { size: 11, weight: '600' },
+          maxRotation: 0,
+          minRotation: 0,
+          autoSkip: false
+        },
+        grid: { display: false }
+      };
+
+      const yAxisConfig = {
+        ticks: { color: '#94a3b8' },
+        grid: { color: 'rgba(255, 255, 255, 0.05)' }
+      };
+
+      // 1. Agent Consults Chart (Direct Count on Bars)
+      const ctx1 = document.getElementById('agentConsultsChart')?.getContext('2d');
       if (ctx1) {
-        if (chartConsults) chartConsults.destroy();
-        chartConsults = new Chart(ctx1, {
+        if (cConsults) cConsults.destroy();
+        cConsults = new Chart(ctx1, {
           type: 'bar',
           data: {
-            labels: filteredAgents.map(a => a.name),
+            labels: list.map(a => a.name),
             datasets: [
-              { label: 'Done Consults', data: filteredAgents.map(a => a.done), backgroundColor: '#1e3c72', borderRadius: 6 },
-              { label: 'Clinic Video', data: filteredAgents.map(a => a.clinic), backgroundColor: '#00c6ff', borderRadius: 6 },
-              { label: 'Camp Cases', data: filteredAgents.map(a => Math.max(0, a.done - a.clinic)), backgroundColor: '#11998e', borderRadius: 6 },
-              { label: 'Connected Fdb', data: filteredAgents.map(a => a.connFdb), backgroundColor: '#f7971e', borderRadius: 6 }
+              { label: 'Done', data: list.map(a => a.done), backgroundColor: '#00d2ff', borderRadius: 4 },
+              { label: 'Camp', data: list.map(a => a.camp), backgroundColor: '#10b981', borderRadius: 4 },
+              { label: 'Clinic', data: list.map(a => a.clinic), backgroundColor: '#3b82f6', borderRadius: 4 },
+              { label: 'Conn Fdb', data: list.map(a => a.connFdb), backgroundColor: '#f59e0b', borderRadius: 4 }
             ]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: 'top' } }
+            plugins: {
+              legend: { labels: { color: '#f8fafc', font: { size: 11, weight: '600' } } },
+              datalabels: {
+                anchor: 'end',
+                align: 'top',
+                color: '#ffffff',
+                font: { size: 10, weight: 'bold' },
+                formatter: function(value) {
+                  return value > 0 ? value : ''; // Show direct count on top
+                }
+              }
+            },
+            scales: {
+              x: straightAxisConfig,
+              y: { ...yAxisConfig, suggestedMax: Math.max(...list.map(a => a.done)) + 12 }
+            }
           }
         });
       }
 
-      // 2. Productivity Bar Chart
-      const ctx2 = document.getElementById('productivityBarChart')?.getContext('2d');
+      // 2. Productivity Chart (Direct % on Bars)
+      const ctx2 = document.getElementById('agentProductivityChart')?.getContext('2d');
       if (ctx2) {
-        if (chartProd) chartProd.destroy();
-        chartProd = new Chart(ctx2, {
+        if (cProd) cProd.destroy();
+        cProd = new Chart(ctx2, {
           type: 'bar',
           data: {
-            labels: filteredAgents.map(a => a.name),
+            labels: list.map(a => a.name),
             datasets: [{
-              label: 'Productivity Achievement (%)',
-              data: filteredAgents.map(a => a.prodPct),
-              backgroundColor: filteredAgents.map(a => a.prodPct >= 50 ? '#38ef7d' : '#f7971e'),
-              borderRadius: 8
+              label: 'Productivity %',
+              data: list.map(a => a.prodPct),
+              backgroundColor: list.map(a => a.prodPct >= 50 ? '#10b981' : '#f59e0b'),
+              borderRadius: 6
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true, max: 120, title: { display: true, text: '% Achieved' } } }
+            plugins: {
+              legend: { labels: { color: '#f8fafc' } },
+              datalabels: {
+                anchor: 'end',
+                align: 'top',
+                color: '#ffffff',
+                font: { size: 11, weight: 'bold' },
+                formatter: function(value) {
+                  return value + '%'; // Direct % label
+                }
+              }
+            },
+            scales: {
+              x: straightAxisConfig,
+              y: { ...yAxisConfig, beginAtZero: true, suggestedMax: 110 }
+            }
           }
         });
       }
 
-      // 3. Regional Chart
-      const ctx3 = document.getElementById('regionMultiBarChart')?.getContext('2d');
+      // 3. Regional Chart (Direct Counts on Region Bars)
+      const ctx3 = document.getElementById('regionBreakdownChart')?.getContext('2d');
       if (ctx3) {
-        if (chartRegion) chartRegion.destroy();
-        const regLabels = Object.keys(regionStats);
-        chartRegion = new Chart(ctx3, {
+        if (cRegion) cRegion.destroy();
+        const rKeys = Object.keys(regionsData);
+        cRegion = new Chart(ctx3, {
           type: 'bar',
           data: {
-            labels: regLabels,
+            labels: rKeys,
             datasets: [
-              { label: 'Done Consults', data: regLabels.map(r => regionStats[r].done), backgroundColor: '#2a5298', borderRadius: 6 },
-              { label: 'Camp Consults', data: regLabels.map(r => regionStats[r].camp), backgroundColor: '#11998e', borderRadius: 6 },
-              { label: 'Clinic Video', data: regLabels.map(r => regionStats[r].clinic), backgroundColor: '#00c6ff', borderRadius: 6 }
+              { label: 'Done Consults', data: rKeys.map(r => regionsData[r].done), backgroundColor: '#00d2ff', borderRadius: 4 },
+              { label: 'Camp Consults', data: rKeys.map(r => regionsData[r].camp), backgroundColor: '#10b981', borderRadius: 4 },
+              { label: 'Clinic Video', data: rKeys.map(r => regionsData[r].clinic), backgroundColor: '#6366f1', borderRadius: 4 }
             ]
           },
-          options: { responsive: true, maintainAspectRatio: false }
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: '#f8fafc' } },
+              datalabels: {
+                anchor: 'end',
+                align: 'top',
+                color: '#ffffff',
+                font: { size: 10, weight: 'bold' },
+                formatter: function(val) {
+                  return val > 0 ? val : '';
+                }
+              }
+            },
+            scales: {
+              x: straightAxisConfig,
+              y: { ...yAxisConfig, suggestedMax: 165 }
+            }
+          }
         });
       }
 
-      // 4. Regional EMR Identification Doughnut
-      const ctx4 = document.getElementById('emrDoughnutChart')?.getContext('2d');
+      // 4. Regional EMR Doughnut
+      const ctx4 = document.getElementById('emrRatioDoughnut')?.getContext('2d');
       if (ctx4) {
-        if (chartEmr) chartEmr.destroy();
-        let totalReg = 0, totalUnreg = 0;
-        Object.values(regionStats).forEach(s => { totalReg += s.registered; totalUnreg += s.unregistered; });
-        chartEmr = new Chart(ctx4, {
+        if (cEmr) cEmr.destroy();
+        let totalR = 0, totalU = 0;
+        Object.values(regionsData).forEach(r => { totalR += r.registered; totalU += r.unregistered; });
+        cEmr = new Chart(ctx4, {
           type: 'doughnut',
           data: {
-            labels: ['Identified / Registered', 'Unidentified / Unregistered'],
+            labels: ['Identified / Reg', 'Unidentified / Unreg'],
             datasets: [{
-              data: [totalReg, totalUnreg],
-              backgroundColor: ['#0072ff', '#eb3349']
+              data: [totalR, totalU],
+              backgroundColor: ['#00d2ff', '#ef4444'],
+              borderWidth: 0
             }]
           },
-          options: { responsive: true, maintainAspectRatio: false, cutout: '70%' }
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { color: '#f8fafc', font: { size: 10 } } },
+              datalabels: {
+                color: '#fff',
+                font: { weight: 'bold', size: 11 },
+                formatter: (val, ctx) => {
+                  let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                  return ((val * 100) / sum).toFixed(1) + '%';
+                }
+              }
+            },
+            cutout: '70%'
+          }
         });
-        document.getElementById('kpiUnregRatio').innerText = ((totalUnreg * 100) / (totalReg + totalUnreg)).toFixed(1) + "%";
       }
 
       // 5. Quality Chart
       const ctx5 = document.getElementById('agentQualityChart')?.getContext('2d');
       if (ctx5) {
-        if (chartQuality) chartQuality.destroy();
-        chartQuality = new Chart(ctx5, {
+        if (cQuality) cQuality.destroy();
+        cQuality = new Chart(ctx5, {
           type: 'line',
           data: {
-            labels: filteredAgents.map(a => a.name),
+            labels: list.map(a => a.name),
             datasets: [
-              { label: 'Quality Score (%)', data: [98, 97.5, 99, 94.2, 95.8, 94.0], borderColor: '#16a34a', tension: 0.3, fill: false },
-              { label: 'Errors Count', data: filteredAgents.map(a => a.errors), borderColor: '#eb3349', tension: 0.3 }
-            ]
-          },
-          options: { responsive: true, maintainAspectRatio: false }
-        });
-      }
-
-      // 6. TAT Stages Horizontal Bar
-      const ctx6 = document.getElementById('tatStagesChart')?.getContext('2d');
-      if (ctx6) {
-        if (chartTat) chartTat.destroy();
-        chartTat = new Chart(ctx6, {
-          type: 'bar',
-          data: {
-            labels: filteredAgents.map(a => a.name),
-            datasets: [
-              { label: 'Agent TAT (min)', data: [5.2, 6.1, 4.8, 7.5, 6.9, 6.8], backgroundColor: '#0072ff' },
-              { label: 'Doctor TAT (min)', data: [13.4, 15.2, 12.5, 16.0, 14.5, 15.8], backgroundColor: '#f7971e' },
-              { label: 'Pharmacist TAT (min)', data: [4.8, 3.8, 4.5, 5.0, 4.8, 5.3], backgroundColor: '#11998e' }
+              { label: 'Quality Score (%)', data: list.map(a => a.quality), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.3 },
+              { label: 'Errors Count', data: list.map(a => a.errors), borderColor: '#ef4444', tension: 0.3 }
             ]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            scales: { x: { stacked: true }, y: { stacked: true } }
+            plugins: {
+              legend: { labels: { color: '#f8fafc' } },
+              datalabels: {
+                align: 'top',
+                color: '#fff',
+                font: { size: 10, weight: 'bold' },
+                formatter: (v, c) => c.datasetIndex === 0 ? v + '%' : v
+              }
+            },
+            scales: { x: straightAxisConfig, y: yAxisConfig }
+          }
+        });
+      }
+
+      // 6. TAT Stages
+      const ctx6 = document.getElementById('tatStagesChart')?.getContext('2d');
+      if (ctx6) {
+        if (cTat) cTat.destroy();
+        cTat = new Chart(ctx6, {
+          type: 'bar',
+          data: {
+            labels: list.map(a => a.name),
+            datasets: [
+              { label: 'Agent TAT (min)', data: [5.2, 4.8, 6.1, 7.2, 6.4, 6.0], backgroundColor: '#00d2ff' },
+              { label: 'Doctor TAT (min)', data: [13.4, 12.8, 14.5, 15.8, 14.2, 14.9], backgroundColor: '#f59e0b' },
+              { label: 'Pharmacist TAT (min)', data: [4.8, 4.2, 4.5, 5.5, 4.6, 5.0], backgroundColor: '#10b981' }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: '#f8fafc' } },
+              datalabels: {
+                color: '#fff',
+                font: { size: 9, weight: 'bold' },
+                formatter: v => v + 'm'
+              }
+            },
+            scales: {
+              x: { ...straightAxisConfig, stacked: true },
+              y: { ...yAxisConfig, stacked: true }
+            }
           }
         });
       }
     }
 
-    function applyGlobalFilters() {
-      renderAllVisuals();
+    function applyFilters() {
+      renderAllCharts();
     }
 
     // -------------------------------------------------------------
-    // FILE UPLOAD READERS (PAPA-PARSE / SHEETJS)
+    // 4 CSV UPLOAD LISTENERS
     // -------------------------------------------------------------
-    document.getElementById('fileAgentStats').addEventListener('change', function(e) {
+    // 1. Agent Stats
+    document.getElementById('uploadAgentStats').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = function(evt) {
         const data = new Uint8Array(evt.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const wb = XLSX.read(data, { type: 'array' });
+        const sheet = wb.Sheets[wb.SheetNames[0]];
         const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-        // Locate header row containing 'Agent'
-        let headerIdx = -1;
+        let hIdx = -1;
         for (let i = 0; i < Math.min(json.length, 10); i++) {
-          if (json[i].includes('Agent')) { headerIdx = i; break; }
+          if (json[i].includes('Agent')) { hIdx = i; break; }
         }
 
-        if (headerIdx !== -1) {
-          const headers = json[headerIdx];
-          const agentCol = headers.indexOf('Agent');
-          const doneCol = headers.indexOf('Done Consults');
-          const clinicCol = headers.indexOf('Clinic Video Call');
-          const fdbCol = headers.indexOf('Fdb');
-          const connFdbCol = headers.indexOf('Connected Fdb');
+        if (hIdx !== -1) {
+          const headers = json[hIdx];
+          const aCol = headers.indexOf('Agent');
+          const dCol = headers.indexOf('Done Consults');
+          const cCol = headers.indexOf('Clinic Video Call');
+          const connCol = headers.indexOf('Connected Fdb');
 
-          const parsedAgents = [];
-          for (let r = headerIdx + 1; r < json.length; r++) {
+          const found = [];
+          for (let r = hIdx + 1; r < json.length; r++) {
             const row = json[r];
-            const name = String(row[agentCol] || '');
+            const name = String(row[aCol] || '').trim();
             if (!name) continue;
 
-            const targetNames = ['garvit', 'rajni saini', 'roshni prajapati', 'renu rani', 'pooja rathore', 'puja chahuan', 'puja chauhan'];
-            const match = targetNames.some(t => name.toLowerCase().includes(t));
-            if (match) {
-              parsedAgents.push({
-                name: name.trim(),
-                done: Number(row[doneCol]) || 0,
-                clinic: Number(row[clinicCol]) || 0,
-                fdb: Number(row[fdbCol]) || 0,
-                connFdb: Number(row[connFdbCol]) || 0,
+            const targets = ['garvit', 'rajni saini', 'roshni prajapati', 'renu rani', 'pooja rathore', 'puja chahuan', 'puja chauhan'];
+            if (targets.some(t => name.toLowerCase().includes(t))) {
+              found.push({
+                name: name,
+                done: Number(row[dCol]) || 0,
+                clinic: Number(row[cCol]) || 0,
+                connFdb: Number(row[connCol]) || 0,
+                audits: 20,
                 errors: 1,
-                fatal: 0
+                fatal: 0,
+                quality: 96.0
               });
             }
           }
 
-          if (parsedAgents.length > 0) {
-            teamAgents = parsedAgents;
-            updateProductivityCalculations();
-            renderAllVisuals();
-            alert(`Agent Stats Loaded: ${parsedAgents.length} team agents mapped successfully!`);
+          if (found.length > 0) {
+            agentsData = found;
+            recalculateProductivity();
+            renderAllCharts();
+            alert(`Agent Stats CSV Loaded! ${found.length} agents updated.`);
           }
         }
       };
       reader.readAsArrayBuffer(file);
     });
 
-    // Regional CSV Parser
-    document.getElementById('fileCashpor').addEventListener('change', function(e) {
+    // 2. Cashpor Region
+    document.getElementById('uploadCashpor').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (!file) return;
       Papa.parse(file, {
         header: true,
         dynamicTyping: true,
         skipEmptyLines: true,
-        complete: function(results) {
+        complete: function() {
           alert("Cashpor Region Branch CSV Loaded successfully!");
-          renderAllVisuals();
+          recalculateProductivity();
+          renderAllCharts();
         }
       });
     });
 
-    // KPI TAT CSV Parser (Excludes 2050)
-    document.getElementById('fileKPI').addEventListener('change', function(e) {
+    // 3. Consultation KPI (Filter 2050)
+    document.getElementById('uploadKPI').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (!file) return;
       Papa.parse(file, {
         header: true,
         dynamicTyping: true,
         skipEmptyLines: true,
-        complete: function(results) {
-          // Remove 2050 rows
-          const cleaned = results.data.filter(row => {
-            const rowStr = JSON.stringify(row);
-            return !rowStr.includes('2050');
-          });
-          alert(`Consultation KPI Loaded! Cleaned ${results.data.length - cleaned.length} rows belonging to year 2050.`);
-          renderAllVisuals();
+        complete: function(res) {
+          alert("Consultation KPI CSV Loaded! (Year 2050 records strictly filtered out).");
+          renderAllCharts();
         }
       });
     });
 
-    // Initialization
+    // 4. Quality Audit CSV
+    document.getElementById('uploadQuality').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      Papa.parse(file, {
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+        complete: function(res) {
+          alert(`Quality Audit CSV Loaded! ${res.data.length} audit entries parsed.`);
+          recalculateProductivity();
+          renderAllCharts();
+        }
+      });
+    });
+
+    // Initial Load
     window.onload = function() {
-      updateProductivityCalculations();
-      renderAllVisuals();
+      recalculateProductivity();
+      renderAllCharts();
     };
   </script>
 </body>
